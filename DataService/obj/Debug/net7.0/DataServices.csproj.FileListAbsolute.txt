@@ -1,0 +1,12 @@
+C:\Work\ezorder-api-dotnet\DataService\bin\Debug\net7.0\DataServices.deps.json
+C:\Work\ezorder-api-dotnet\DataService\bin\Debug\net7.0\DataServices.dll
+C:\Work\ezorder-api-dotnet\DataService\bin\Debug\net7.0\DataServices.pdb
+C:\Work\ezorder-api-dotnet\DataService\obj\Debug\net7.0\DataServices.csproj.AssemblyReference.cache
+C:\Work\ezorder-api-dotnet\DataService\obj\Debug\net7.0\DataServices.GeneratedMSBuildEditorConfig.editorconfig
+C:\Work\ezorder-api-dotnet\DataService\obj\Debug\net7.0\DataServices.AssemblyInfoInputs.cache
+C:\Work\ezorder-api-dotnet\DataService\obj\Debug\net7.0\DataServices.AssemblyInfo.cs
+C:\Work\ezorder-api-dotnet\DataService\obj\Debug\net7.0\DataServices.csproj.CoreCompileInputs.cache
+C:\Work\ezorder-api-dotnet\DataService\obj\Debug\net7.0\DataServices.dll
+C:\Work\ezorder-api-dotnet\DataService\obj\Debug\net7.0\refint\DataServices.dll
+C:\Work\ezorder-api-dotnet\DataService\obj\Debug\net7.0\DataServices.pdb
+C:\Work\ezorder-api-dotnet\DataService\obj\Debug\net7.0\ref\DataServices.dll
