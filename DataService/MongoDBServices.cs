@@ -8,24 +8,50 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataServices.Models;
+using DataServices;
+using Microsoft.Extensions.Configuration;
 
 namespace DataService
 {
-    public class MongoDBServices
+    public class MongoDBServices : IMongoDBServices
     {
-        private static readonly CultureInfo en = new CultureInfo("en-US");
-        private readonly IMongoDatabase _mongoDatabase;
-        public MongoDBServices(IOptions<MongoDBSettings> mongoDBSettings)
+        private readonly IConfiguration _configuration;
+        public MongoDBServices(IConfiguration configuration)
         {
-            MongoClient client = new MongoClient(mongoDBSettings.Value.ConnectionString);
-            _mongoDatabase = client.GetDatabase(mongoDBSettings.Value.DatabaseName);
+            _configuration = configuration;
         }
-        public async Task<bool> CollectionExists(string collectionName)
+        public IMongoDatabase GetMongoDbInstance()
         {
-            var filter = new BsonDocument("name", collectionName);
-            var options = new ListCollectionNamesOptions { Filter = filter };
-
-            return await _mongoDatabase.ListCollectionNames(options).AnyAsync();
+            var mongoDBSettings = _configuration.GetSection("MongoDBSettings")
+                                                    .Get<MongoDBSettings>();
+            var client = new MongoClient(mongoDBSettings?.ConnectionString);
+            var db = client.GetDatabase(mongoDBSettings?.DatabaseName);
+            return db;
+        }
+        private IMongoCollection<T> GetCollection<T>(string collectionName)
+        {
+            return GetMongoDbInstance().GetCollection<T>(collectionName);
+        }
+        public async Task CreateDocument<T>(string collectionName, T document)
+        {
+            await GetCollection<T>(collectionName).InsertOneAsync(document);
+        }
+        public async Task DeleteDocument<T>(string collectionName, FilterDefinition<T> filter)
+        {
+            await GetCollection<T>(collectionName).DeleteOneAsync(filter);
+        }
+        public async Task<List<T>> GetAllDocuments<T>(string collectionName)
+        {
+            var collection = GetCollection<T>(collectionName);
+            return await collection.Find(x => true).ToListAsync();
+        }
+        public async Task<List<T>> GetFilteredDocuments<T>(string collectionName, FilterDefinition<T> filter)
+        {
+            return await GetCollection<T>(collectionName).Find(filter).ToListAsync();
+        }
+        public async Task UpdateDocument<T>(string collectionName, FilterDefinition<T> filter, UpdateDefinition<T> document)
+        {
+            await GetCollection<T>(collectionName).UpdateOneAsync(filter, document);
         }
     }
 }

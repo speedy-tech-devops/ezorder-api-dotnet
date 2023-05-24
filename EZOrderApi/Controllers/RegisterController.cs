@@ -1,4 +1,6 @@
 ﻿using DataService;
+using DataServices;
+using DataServices.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EZOrderApi.Controllers
@@ -7,15 +9,15 @@ namespace EZOrderApi.Controllers
     [Route("api/[controller]")]
     public class RegisterController : ControllerBase
     {
-        private readonly MongoDBServices _mongoDBServices;
-        public RegisterController(MongoDBServices mongoDBServices)
+        private readonly IMongoDBServices _mongoDBServices;
+        public RegisterController(IMongoDBServices mongo)
         {
-            _mongoDBServices = mongoDBServices;
+            _mongoDBServices = mongo;
         }
         [HttpGet("")]
         public async Task<IActionResult> TEST()
         {
-            _ = _mongoDBServices.CollectionExists("");
+            var xx = await _mongoDBServices.GetAllDocuments<ShopUser>("dev-speedy", "shop_users");
             return await Task.FromResult(StatusCode(400));
         }
     }

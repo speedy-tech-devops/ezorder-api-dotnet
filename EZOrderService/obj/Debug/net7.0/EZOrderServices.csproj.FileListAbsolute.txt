@@ -1,0 +1,12 @@
+C:\Work\ezorder-api-dotnet\EZOrderService\bin\Debug\net7.0\EZOrderServices.deps.json
+C:\Work\ezorder-api-dotnet\EZOrderService\bin\Debug\net7.0\EZOrderServices.dll
+C:\Work\ezorder-api-dotnet\EZOrderService\bin\Debug\net7.0\EZOrderServices.pdb
+C:\Work\ezorder-api-dotnet\EZOrderService\obj\Debug\net7.0\EZOrderServices.csproj.AssemblyReference.cache
+C:\Work\ezorder-api-dotnet\EZOrderService\obj\Debug\net7.0\EZOrderServices.GeneratedMSBuildEditorConfig.editorconfig
+C:\Work\ezorder-api-dotnet\EZOrderService\obj\Debug\net7.0\EZOrderServices.AssemblyInfoInputs.cache
+C:\Work\ezorder-api-dotnet\EZOrderService\obj\Debug\net7.0\EZOrderServices.AssemblyInfo.cs
+C:\Work\ezorder-api-dotnet\EZOrderService\obj\Debug\net7.0\EZOrderServices.csproj.CoreCompileInputs.cache
+C:\Work\ezorder-api-dotnet\EZOrderService\obj\Debug\net7.0\EZOrderServices.dll
+C:\Work\ezorder-api-dotnet\EZOrderService\obj\Debug\net7.0\refint\EZOrderServices.dll
+C:\Work\ezorder-api-dotnet\EZOrderService\obj\Debug\net7.0\EZOrderServices.pdb
+C:\Work\ezorder-api-dotnet\EZOrderService\obj\Debug\net7.0\ref\EZOrderServices.dll
