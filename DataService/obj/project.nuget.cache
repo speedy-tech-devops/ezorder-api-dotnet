@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "L256EgHq9/u+Ozn2DFEfDLvdOxpvWx77TC/KpCbgqKbRTIjRq+Yu03tCkIcSdOl2rN6wvImfItOqaiHtwrcsHA==",
+  "dgSpecHash": "AGVrIwJ5mrrtQ59gnV19+iwD3JxZ4vzFL7bbZM0onbbkFwSYvSyaKuKPCi3k1ZfH3yPV9DRHTDWY9CW7Fp8vCA==",
   "success": true,
   "projectFilePath": "C:\\Work\\ezorder-api-dotnet\\DataService\\DataServices.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\oatpa\\.nuget\\packages\\awssdk.core\\3.7.100.14\\awssdk.core.3.7.100.14.nupkg.sha512",
     "C:\\Users\\oatpa\\.nuget\\packages\\awssdk.securitytoken\\3.7.100.14\\awssdk.securitytoken.3.7.100.14.nupkg.sha512",
+    "C:\\Users\\oatpa\\.nuget\\packages\\bcrypt.net-core\\1.6.0\\bcrypt.net-core.1.6.0.nupkg.sha512",
     "C:\\Users\\oatpa\\.nuget\\packages\\dnsclient\\1.6.1\\dnsclient.1.6.1.nupkg.sha512",
     "C:\\Users\\oatpa\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\7.0.0\\microsoft.extensions.configuration.abstractions.7.0.0.nupkg.sha512",
     "C:\\Users\\oatpa\\.nuget\\packages\\microsoft.extensions.configuration.binder\\7.0.0\\microsoft.extensions.configuration.binder.7.0.0.nupkg.sha512",

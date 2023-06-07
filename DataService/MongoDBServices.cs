@@ -10,48 +10,163 @@ using System.Threading.Tasks;
 using DataServices.Models;
 using DataServices;
 using Microsoft.Extensions.Configuration;
+using System.ComponentModel;
+using System.Reflection;
+using CommonServices;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
+using System.Collections;
+using ZstdSharp;
 
-namespace DataService
+namespace DataServices.Repository
 {
-    public class MongoDBServices : IMongoDBServices
+    public class MongoDBServices
     {
-        private readonly IConfiguration _configuration;
-        public MongoDBServices(IConfiguration configuration)
+        private readonly IMongoDatabase _database;
+
+        public MongoDBServices(IOptions<MongoDBSettings> mongoDBSettings)
         {
-            _configuration = configuration;
+            MongoClient client = new MongoClient(mongoDBSettings?.Value.ConnectionString);
+            _database = client.GetDatabase(mongoDBSettings?.Value.DatabaseName);
         }
-        public IMongoDatabase GetMongoDbInstance()
+        private IMongoCollection<T> GetCollection<T>()
         {
-            var mongoDBSettings = _configuration.GetSection("MongoDBSettings")
-                                                    .Get<MongoDBSettings>();
-            var client = new MongoClient(mongoDBSettings?.ConnectionString);
-            var db = client.GetDatabase(mongoDBSettings?.DatabaseName);
-            return db;
+            string collectionName = string.Empty;
+            DisplayNameAttribute? displayNameAttribute = typeof(T).GetCustomAttribute<DisplayNameAttribute>();
+            if (displayNameAttribute != null)
+                collectionName = displayNameAttribute.DisplayName;
+            else
+                collectionName = StringExtensions.ConvertToSnakeCase(typeof(T).Name);
+            return _database.GetCollection<T>(collectionName);
         }
-        private IMongoCollection<T> GetCollection<T>(string collectionName)
+        public async Task<T> InsertDocumentAsync<T>(T document)
         {
-            return GetMongoDbInstance().GetCollection<T>(collectionName);
+            try
+            {
+                await GetCollection<T>().InsertOneAsync(document);
+                return document;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("ไม่สามารถเพิ่มข้อมูลได้");
+            }
+
         }
-        public async Task CreateDocument<T>(string collectionName, T document)
+        public T InsertDocument<T>(T document)
         {
-            await GetCollection<T>(collectionName).InsertOneAsync(document);
+            try
+            {
+                GetCollection<T>().InsertOne(document);
+                return document;
+            }
+            catch
+            {
+                throw new Exception("ไม่สามารถเพิ่มข้อมูลได้");
+            }
         }
-        public async Task DeleteDocument<T>(string collectionName, FilterDefinition<T> filter)
+        public async Task DeleteDocumentAsync<T>(FilterDefinition<T> filter)
         {
-            await GetCollection<T>(collectionName).DeleteOneAsync(filter);
+            try
+            {
+                await GetCollection<T>().DeleteOneAsync(filter);
+            }
+            catch
+            {
+                throw new Exception("ไม่สามารถเพิ่มข้อมูลได้");
+            }
         }
-        public async Task<List<T>> GetAllDocuments<T>(string collectionName)
+        public void DeleteDocument<T>(FilterDefinition<T> filter)
         {
-            var collection = GetCollection<T>(collectionName);
-            return await collection.Find(x => true).ToListAsync();
+            try
+            {
+                GetCollection<T>().DeleteOne(filter);
+            }
+            catch
+            {
+                throw new Exception("ไม่สามารถเพิ่มข้อมูลได้");
+            }
         }
-        public async Task<List<T>> GetFilteredDocuments<T>(string collectionName, FilterDefinition<T> filter)
+        public async Task<List<T>> GetAllDocumentsAsync<T>()
         {
-            return await GetCollection<T>(collectionName).Find(filter).ToListAsync();
+            try
+            {
+                return await GetCollection<T>().Find(x => true).ToListAsync();
+            }
+            catch
+            {
+                throw new Exception("ไม่สามารถค้นหาข้อมูลได้");
+            }
         }
-        public async Task UpdateDocument<T>(string collectionName, FilterDefinition<T> filter, UpdateDefinition<T> document)
+        public List<T> GetAllDocuments<T>()
         {
-            await GetCollection<T>(collectionName).UpdateOneAsync(filter, document);
+            try
+            {
+                return GetCollection<T>().Find(x => true).ToList();
+            }
+            catch
+            {
+                throw new Exception("ไม่สามารถค้นหาข้อมูลได้");
+            }
         }
+        public async Task<List<T>> GetFilteredDocumentsAsync<T>(FilterDefinition<T> filter)
+        {
+            try
+            {
+                return await GetCollection<T>().Find(filter).ToListAsync();
+            }
+            catch
+            {
+                throw new Exception("ไม่สามารถค้นหาข้อมูลได้");
+            }
+        }
+        public List<T> GetFilteredDocuments<T>(FilterDefinition<T> filter)
+        {
+            try
+            {
+                return GetCollection<T>().Find(filter).ToList();
+            }
+            catch
+            {
+                throw new Exception("ไม่สามารถค้นหาข้อมูลได้");
+            }
+        }
+        public async Task UpdateDocumentAsync<T>(FilterDefinition<T> filter, UpdateDefinition<T> document)
+        {
+            try
+            {
+                await GetCollection<T>().UpdateOneAsync(filter, document);
+            }
+            catch
+            {
+                throw new Exception("ไม่สามารถอัพเดทข้อมูลได้");
+            }
+        }
+        public void UpdateDocument<T>(FilterDefinition<T> filter, UpdateDefinition<T> document)
+        {
+            try
+            {
+                GetCollection<T>().UpdateOne(filter, document);
+            }
+            catch
+            {
+                throw new Exception("ไม่สามารถอัพเดทข้อมูลได้");
+            }
+        }
+        public async Task<T> FindOneAndUpdateDocumentAsync<T>(FilterDefinition<T> filter, UpdateDefinition<T> document)
+        {
+            try
+            {
+                var record = await GetCollection<T>().FindOneAndUpdateAsync(filter, document, options: new FindOneAndUpdateOptions<T>
+                {
+                    ReturnDocument = ReturnDocument.Before
+                }).ConfigureAwait(false);
+                return record;
+            }
+            catch
+            {
+                throw new Exception("ไม่สามารถอัพเดทข้อมูลได้");
+            }
+        }
+
     }
 }

@@ -1,0 +1,12 @@
+C:\Work\ezorder-api-dotnet\CommonService\bin\Release\net7.0\CommonServices.deps.json
+C:\Work\ezorder-api-dotnet\CommonService\bin\Release\net7.0\CommonServices.dll
+C:\Work\ezorder-api-dotnet\CommonService\bin\Release\net7.0\CommonServices.pdb
+C:\Work\ezorder-api-dotnet\CommonService\obj\Release\net7.0\CommonServices.csproj.AssemblyReference.cache
+C:\Work\ezorder-api-dotnet\CommonService\obj\Release\net7.0\CommonServices.GeneratedMSBuildEditorConfig.editorconfig
+C:\Work\ezorder-api-dotnet\CommonService\obj\Release\net7.0\CommonServices.AssemblyInfoInputs.cache
+C:\Work\ezorder-api-dotnet\CommonService\obj\Release\net7.0\CommonServices.AssemblyInfo.cs
+C:\Work\ezorder-api-dotnet\CommonService\obj\Release\net7.0\CommonServices.csproj.CoreCompileInputs.cache
+C:\Work\ezorder-api-dotnet\CommonService\obj\Release\net7.0\CommonServices.dll
+C:\Work\ezorder-api-dotnet\CommonService\obj\Release\net7.0\refint\CommonServices.dll
+C:\Work\ezorder-api-dotnet\CommonService\obj\Release\net7.0\CommonServices.pdb
+C:\Work\ezorder-api-dotnet\CommonService\obj\Release\net7.0\ref\CommonServices.dll

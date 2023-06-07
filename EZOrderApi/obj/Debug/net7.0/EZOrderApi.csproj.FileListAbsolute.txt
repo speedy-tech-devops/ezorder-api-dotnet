@@ -47,3 +47,9 @@ C:\Work\ezorder-api-dotnet\EZOrderApi\obj\Debug\net7.0\refint\EZOrderApi.dll
 C:\Work\ezorder-api-dotnet\EZOrderApi\obj\Debug\net7.0\EZOrderApi.pdb
 C:\Work\ezorder-api-dotnet\EZOrderApi\obj\Debug\net7.0\EZOrderApi.genruntimeconfig.cache
 C:\Work\ezorder-api-dotnet\EZOrderApi\obj\Debug\net7.0\ref\EZOrderApi.dll
+C:\Work\ezorder-api-dotnet\EZOrderApi\bin\Debug\net7.0\CommonServices.dll
+C:\Work\ezorder-api-dotnet\EZOrderApi\bin\Debug\net7.0\CommonServices.pdb
+C:\Work\ezorder-api-dotnet\EZOrderApi\bin\Debug\net7.0\BCrypt.Net-Core.dll
+C:\Work\ezorder-api-dotnet\EZOrderApi\bin\Debug\net7.0\AutoMapper.dll
+C:\Work\ezorder-api-dotnet\EZOrderApi\bin\Debug\net7.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+C:\Work\ezorder-api-dotnet\EZOrderApi\bin\Debug\net7.0\Microsoft.IO.RecyclableMemoryStream.dll

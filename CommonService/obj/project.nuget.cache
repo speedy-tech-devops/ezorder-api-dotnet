@@ -1,8 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "RkOOO+dh+OMOcIW8oNP04u9n+zkhgQXw0nc7+OcsJ57zRFYqpaVRhe3NuKrUBk1h81b73htpvsli4YQmi+BaCw==",
+  "dgSpecHash": "Yp/7Ugf8xn7h/NP3wlzlPx2RIRRyZj8b+fN2KoK0+4RQ1hepErxLvRAUDmn0i6HQc5cc9xfBoRW/hLIvtj/OzA==",
   "success": true,
   "projectFilePath": "C:\\Work\\ezorder-api-dotnet\\CommonService\\CommonServices.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\oatpa\\.nuget\\packages\\bcrypt.net-core\\1.6.0\\bcrypt.net-core.1.6.0.nupkg.sha512",
+    "C:\\Users\\oatpa\\.nuget\\packages\\mongodb.bson\\2.19.1\\mongodb.bson.2.19.1.nupkg.sha512",
+    "C:\\Users\\oatpa\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\5.0.0\\system.runtime.compilerservices.unsafe.5.0.0.nupkg.sha512"
+  ],
   "logs": []
 }
