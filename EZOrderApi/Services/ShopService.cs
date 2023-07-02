@@ -1,10 +1,13 @@
-﻿using AutoMapper;
+﻿using Amazon.Runtime;
+using AutoMapper;
 using CommonServices;
 using DataServices;
 using DataServices.Models;
 using DataServices.Repository;
 using EZOrderApi.DTO;
 using MongoDB.Driver;
+using MongoDB.Libmongocrypt;
+using System.Net;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace EZOrderApi.Services
@@ -25,7 +28,7 @@ namespace EZOrderApi.Services
             string passwordEncrypt = await BCryptExtension.Encrypt(registerModel.Password);
             var filter = Builders<ShopRoles>.Filter.Eq("code", "shop-owner");
             var role = await _mongoDBService.GetFilteredDocumentsAsync(filter);
-            var filterRef = Builders<ReferralCode>.Filter.Where(c => c.IsEnable == true && c.Code == registerModel.ReferralCode);
+            var filterRef = Builders<ReferralCode>.Filter.Where(c => c.IsEnable == true && c.Code == registerModel.ReferralCode && c.IsDelete == false);
             var referral = await _mongoDBService.GetFilteredDocumentsAsync(filterRef);
             var notiEvents = await _mongoDBService.GetAllDocumentsAsync<NotificationEvents>();
             Shops shops = new Shops()
@@ -35,8 +38,9 @@ namespace EZOrderApi.Services
                 PackageType = registerModel.PackageType,
                 ShopType = registerModel.ShopType,
                 PhoneNumber = registerModel.Mobile,
-                IsApproved = false,
-                UpdatedAt = DateTime.UtcNow,
+                IsApproved = true,
+                ApprovedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
                 Name = new ShopName()
                 {
                     EN = registerModel.ShopName,
@@ -73,7 +77,7 @@ namespace EZOrderApi.Services
             {
                 Address = "",
                 ClosingTime = "",
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.Now,
                 //CreatedBy = shops.Id,
                 TaxId = "",
                 SystemConfigs = new BranchSystemConfigs()
@@ -130,21 +134,61 @@ namespace EZOrderApi.Services
                 DisplayOrder = 1,
                 Shop = shops.Id,
                 IsRecommendCategory = true,
-                UpdatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.Now,
             };
             categories = await _mongoDBService.InsertDocumentAsync(categories);
             var shopUsers = _mapper.Map<ShopUsers>(registerModel);
+            var name = registerModel.FullName.Split(' ').ToList();
+            shopUsers.FirstName = name[0];
+            if (name.Count > 1)
+                shopUsers.LastName = name[1];
+            shopUsers.Password = passwordEncrypt;
             shopUsers.OwnerShop = shops.Id;
             shopUsers.IsDelete = false;
             shopUsers.IsOwnerAccount = true;
             shopUsers.IsEnable = true;
             shopUsers.Roles = role.Select(c => c.Id).ToList();
-            shopUsers.UpdatedAt = DateTime.UtcNow;
+            shopUsers.UpdatedAt = DateTime.Now;
             shopUsers.version = Convert.ToInt32(_configuration.GetSection("Version").Value);
             shopUsers = await _mongoDBService.InsertDocumentAsync(shopUsers);
+            LineNotifyExtension lineNotifyExtension = new("lzReMRETIZzlUfee7XeTAToQBOK2dxONV6AMkvKGQlz");
+            string notiMsg = $"{Environment.NewLine}⚠️*มีร้านสมัครเข้ามาใหม่*{Environment.NewLine}" +
+                $"Shop: {registerModel.ShopName}{Environment.NewLine}" +
+                $"Tel: {registerModel.Mobile}{Environment.NewLine}" +
+                $"Email: {registerModel.Email}{Environment.NewLine}" +
+                $"Password: {registerModel.Password}{Environment.NewLine}" +
+                $"Name: {registerModel.FullName}";
+            var lineResponse = await lineNotifyExtension.SendMessageAsync(notiMsg, "false");
         }
-        private async Task CreateShop(RegisterModel registerModel)
+        public async Task<ShopWaitApproveResponse> GetShopWaitApprove(ShopWaitApproveResponse response)
         {
+            var filter = Builders<Shops>.Filter.Where(c => c.IsApproved == false);
+            var shops = await _mongoDBService.GetFilteredDocumentsAsync(filter);
+            response.Shops = _mapper.Map<List<ShopWaitApproveItemResponse>>(shops);
+            return response;
+        }
+        public async Task<ResponseBaseModel> ApproveShop(string shopId, ResponseBaseModel response)
+        {
+            try
+            {
+                var filter = Builders<Shops>.Filter.Where(c => c.Id == shopId);
+                var shops = _mongoDBService.GetFilteredDocumentsAsync(filter).GetAwaiter().GetResult().FirstOrDefault();
+                if (shops == null)
+                {
+                    response.Status = (int)HttpStatusCode.BadRequest;
+                    response.StatusText = "ไม่พบข้อมูล";
+                    return response;
+                }
+                var update = Builders<Shops>.Update.Set(x => x.IsApproved, true)
+                                                                     .Set(x => x.ApprovedAt, DateTime.Now);
+                await _mongoDBService.UpdateDocumentAsync(filter, update);
+                return response;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
 
         }
     }

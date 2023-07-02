@@ -42,7 +42,7 @@ namespace LineMessage.Middleware
                 RequsetBody = ReadStreamInChunks(requestStream),
                 Url = context.Request.GetDisplayUrl(),
                 Part = context.Request.Path,
-                CreateDate = DateTime.UtcNow
+                CreateDate = DateTime.Now
             };
             log = await mongoDBServices.InsertDocumentAsync<RequestResponseLogModel>(log);
             return log;
@@ -62,7 +62,7 @@ namespace LineMessage.Middleware
             var filter = Builders<RequestResponseLogModel>.Filter.Eq("Id", requsetLog.Id);
             var update = Builders<RequestResponseLogModel>.Update.Set(x => x.ResponseBody, context.Request.Method == "GET" ? "" : text)
                                                                  .Set(x => x.ResponseHeader, builderHeader.ToString())
-                                                                 .Set(x => x.UpdateDate, DateTime.UtcNow)
+                                                                 .Set(x => x.UpdateDate, DateTime.Now)
                                                                  .Set(x => x.StatusCode, context.Response.StatusCode);
             await mongoDBServices.UpdateDocumentAsync<RequestResponseLogModel>(filter, update);
             await responseBody.CopyToAsync(originalBodyStream);

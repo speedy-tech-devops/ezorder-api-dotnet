@@ -23,12 +23,12 @@ namespace EZOrderApi.Controllers
             _mongoDBService = mongoDBService;
             _configuration = configuration;
         }
-        [HttpGet("GetByName")]
-        public async Task<IEnumerable<ShopUsers>> GetByName(string name)
-        {
-            var filter = Builders<ShopUsers>.Filter.Eq("Name", name);
-            return await _mongoDBService.GetFilteredDocumentsAsync<ShopUsers>(filter);
-        }
+        //[HttpGet("GetByName")]
+        //public async Task<IEnumerable<ShopUsers>> GetByName(string name)
+        //{
+        //    var filter = Builders<ShopUsers>.Filter.Eq("Name", name);
+        //    return await _mongoDBService.GetFilteredDocumentsAsync<ShopUsers>(filter);
+        //}
         //[HttpPatch("UpdateNameAndSalary")]
         //public async Task UpdateDetails(ShopUser partechData)
         //{
