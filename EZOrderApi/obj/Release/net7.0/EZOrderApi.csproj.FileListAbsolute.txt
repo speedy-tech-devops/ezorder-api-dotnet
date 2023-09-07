@@ -5,12 +5,15 @@ C:\Work\ezorder-api-dotnet\EZOrderApi\bin\Release\net7.0\EZOrderApi.deps.json
 C:\Work\ezorder-api-dotnet\EZOrderApi\bin\Release\net7.0\EZOrderApi.runtimeconfig.json
 C:\Work\ezorder-api-dotnet\EZOrderApi\bin\Release\net7.0\EZOrderApi.dll
 C:\Work\ezorder-api-dotnet\EZOrderApi\bin\Release\net7.0\EZOrderApi.pdb
+C:\Work\ezorder-api-dotnet\EZOrderApi\bin\Release\net7.0\AutoMapper.dll
+C:\Work\ezorder-api-dotnet\EZOrderApi\bin\Release\net7.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
 C:\Work\ezorder-api-dotnet\EZOrderApi\bin\Release\net7.0\AWSSDK.Core.dll
 C:\Work\ezorder-api-dotnet\EZOrderApi\bin\Release\net7.0\AWSSDK.SecurityToken.dll
 C:\Work\ezorder-api-dotnet\EZOrderApi\bin\Release\net7.0\BCrypt.Net-Core.dll
 C:\Work\ezorder-api-dotnet\EZOrderApi\bin\Release\net7.0\DnsClient.dll
 C:\Work\ezorder-api-dotnet\EZOrderApi\bin\Release\net7.0\Microsoft.AspNetCore.OpenApi.dll
 C:\Work\ezorder-api-dotnet\EZOrderApi\bin\Release\net7.0\Microsoft.Extensions.Options.dll
+C:\Work\ezorder-api-dotnet\EZOrderApi\bin\Release\net7.0\Microsoft.IO.RecyclableMemoryStream.dll
 C:\Work\ezorder-api-dotnet\EZOrderApi\bin\Release\net7.0\Microsoft.OpenApi.dll
 C:\Work\ezorder-api-dotnet\EZOrderApi\bin\Release\net7.0\MongoDB.Bson.dll
 C:\Work\ezorder-api-dotnet\EZOrderApi\bin\Release\net7.0\MongoDB.Driver.dll
@@ -50,6 +53,3 @@ C:\Work\ezorder-api-dotnet\EZOrderApi\obj\Release\net7.0\refint\EZOrderApi.dll
 C:\Work\ezorder-api-dotnet\EZOrderApi\obj\Release\net7.0\EZOrderApi.pdb
 C:\Work\ezorder-api-dotnet\EZOrderApi\obj\Release\net7.0\EZOrderApi.genruntimeconfig.cache
 C:\Work\ezorder-api-dotnet\EZOrderApi\obj\Release\net7.0\ref\EZOrderApi.dll
-C:\Work\ezorder-api-dotnet\EZOrderApi\bin\Release\net7.0\AutoMapper.dll
-C:\Work\ezorder-api-dotnet\EZOrderApi\bin\Release\net7.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
-C:\Work\ezorder-api-dotnet\EZOrderApi\bin\Release\net7.0\Microsoft.IO.RecyclableMemoryStream.dll

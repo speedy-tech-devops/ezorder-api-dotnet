@@ -119,6 +119,36 @@ namespace DataServices.Repository
                 throw new Exception("ไม่สามารถค้นหาข้อมูลได้");
             }
         }
+        public async Task<List<T>> GetFilteredDocumentsAsync<T>(FilterDefinition<T> filter, int skipCount, int pageSize , string sortDirection)
+        {
+            try
+            {
+                SortDefinition<T> sortDefinition;
+                if (sortDirection.ToLower() == "desc")
+                {
+                    sortDefinition = Builders<T>.Sort.Descending("_id");
+                }
+                else
+                {
+                    sortDefinition = Builders<T>.Sort.Ascending("_id");
+                }
+                return await GetCollection<T>()
+                    .Find(filter)
+                    .Sort(sortDefinition)
+                    .Skip(skipCount)
+                    .Limit(pageSize)
+                    .ToListAsync();
+            }
+            catch
+            {
+                throw new Exception("ไม่สามารถค้นหาข้อมูลได้");
+            }
+        }
+        public async Task<int> GetTotalCountAsync<T>(FilterDefinition<T> filter)
+        {
+            long totalCount = await GetCollection<T>().CountDocumentsAsync(filter);
+            return (int)totalCount;
+        }
         public List<T> GetFilteredDocuments<T>(FilterDefinition<T> filter)
         {
             try

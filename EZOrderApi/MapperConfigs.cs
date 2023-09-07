@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EZOrderApi.DTO;
 
 namespace EZOrderApi
 {
@@ -11,6 +12,8 @@ namespace EZOrderApi
             CreateMap<DataServices.Models.ReferralCode, DTO.SaleReferralItemResponse>()
                 .ReverseMap();
             CreateMap<DataServices.Models.Shops, DTO.ShopWaitApproveItemResponse>()
+               .ReverseMap();
+            CreateMap<DataServices.Models.Shops, DTO.Shop>()
                .ReverseMap();
             
         }

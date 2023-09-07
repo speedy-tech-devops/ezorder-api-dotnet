@@ -23,4 +23,17 @@ namespace EZOrderApi.DTO
         public string? UpdatedBy { get; set; }
         public string? ReferralCode { get; set; }
     }
+    public class ShopListResponse : ResponseBasePageModel
+    {
+        public List<Shop> Shops { get; set; }
+    }
+    public class Shop
+    {
+        public string? Id { get; set; }
+        public ShopName? Name { get; set; }
+        public string? ShopType { get; set; }
+        public string? PhoneNumber { get; set; }
+        public string? ReferralCode { get; set; }
+        public DateTime ExpirdAt { get; set; }
+    }
 }

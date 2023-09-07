@@ -5,6 +5,7 @@ using DataServices;
 using DataServices.Models;
 using DataServices.Repository;
 using EZOrderApi.DTO;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Libmongocrypt;
 using System.Net;
@@ -17,19 +18,29 @@ namespace EZOrderApi.Services
         private readonly MongoDBServices _mongoDBService;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
+        private readonly EmailService _EmailService;
         public ShopService(IMapper mapper, MongoDBServices mongoDBService, IConfiguration configuration)
         {
             _mapper = mapper;
             _mongoDBService = mongoDBService;
             _configuration = configuration;
         }
-        public async Task Register(RegisterModel registerModel)
+        public async Task<ResponseBaseModel> Register(RegisterModel registerModel, ResponseBaseModel response)
         {
+            registerModel.Email = registerModel.Email?.ToLower();
             string passwordEncrypt = await BCryptExtension.Encrypt(registerModel.Password);
             var filter = Builders<ShopRoles>.Filter.Eq("code", "shop-owner");
             var role = await _mongoDBService.GetFilteredDocumentsAsync(filter);
             var filterRef = Builders<ReferralCode>.Filter.Where(c => c.IsEnable == true && c.Code == registerModel.ReferralCode && c.IsDelete == false);
             var referral = await _mongoDBService.GetFilteredDocumentsAsync(filterRef);
+            var filterShop = Builders<ShopUsers>.Filter.Where(c => c.Email == registerModel.Email);
+            var shopUsersCheck = await _mongoDBService.GetFilteredDocumentsAsync(filterShop);
+            if (shopUsersCheck.Any())
+            {
+                response.Status = (int)HttpStatusCode.BadRequest;
+                response.StatusText = "อีเมลนี้มีผู้ใช้งานแล้ว กรุณาระบุอีเมลใหม่อีกครั้ง";
+                return response;
+            }
             var notiEvents = await _mongoDBService.GetAllDocumentsAsync<NotificationEvents>();
             Shops shops = new Shops()
             {
@@ -70,7 +81,8 @@ namespace EZOrderApi.Services
                     IGUrl = "",
                     WebsiteUrl = ""
                 },
-                ReferralCodeId = referral?.FirstOrDefault()?.Id
+                ReferralCodeId = referral?.FirstOrDefault()?.Id,
+                ExpirdAt = DateTime.Now.AddDays(45),
             };
             shops = await _mongoDBService.InsertDocumentAsync(shops);
             Branches branches = new Branches()
@@ -153,18 +165,43 @@ namespace EZOrderApi.Services
             shopUsers = await _mongoDBService.InsertDocumentAsync(shopUsers);
             LineNotifyExtension lineNotifyExtension = new("lzReMRETIZzlUfee7XeTAToQBOK2dxONV6AMkvKGQlz");
             string notiMsg = $"{Environment.NewLine}⚠️*มีร้านสมัครเข้ามาใหม่*{Environment.NewLine}" +
-                $"Shop: {registerModel.ShopName}{Environment.NewLine}" +
-                $"Tel: {registerModel.Mobile}{Environment.NewLine}" +
-                $"Email: {registerModel.Email}{Environment.NewLine}" +
-                $"Password: {registerModel.Password}{Environment.NewLine}" +
-                $"Name: {registerModel.FullName}";
+                $"ชื่อร้าน: {registerModel.ShopName}{Environment.NewLine}" +
+                $"ชื่อผู้ติดต่อ: {registerModel.FullName}{Environment.NewLine}" +
+                $"เบอร์โทร: {registerModel.Mobile}{Environment.NewLine}" +
+                $"อีเมล: {registerModel.Email}{Environment.NewLine}" +
+                $"Password: {registerModel.Password}";
+            if (!string.IsNullOrWhiteSpace(registerModel.ReferralCode))
+            {
+                notiMsg += $"{Environment.NewLine}Referral Code: {registerModel.ReferralCode}";
+            }
             var lineResponse = await lineNotifyExtension.SendMessageAsync(notiMsg, "false");
+
+            return response;
         }
         public async Task<ShopWaitApproveResponse> GetShopWaitApprove(ShopWaitApproveResponse response)
         {
             var filter = Builders<Shops>.Filter.Where(c => c.IsApproved == false);
             var shops = await _mongoDBService.GetFilteredDocumentsAsync(filter);
             response.Shops = _mapper.Map<List<ShopWaitApproveItemResponse>>(shops);
+            return response;
+        }
+        public async Task<ShopListResponse> GetShop(ShopListResponse response, string searchText, int? pageIndex, int? pageSize, string sortFieldName, string sortDirection)
+        {
+            var filterBuilder = Builders<Shops>.Filter;
+            var filter = filterBuilder.Where(c => true == true);
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                filter &= filterBuilder.Where(c => c.Name != null && (c.Name.TH.Contains(searchText) || c.Name.EN.Contains(searchText)));
+            }
+            int skipCount = ((pageIndex ?? 1) - 1) * (pageSize ?? 10);
+            SortDefinition<Shops> sortDefinition = null;
+            sortDirection = sortDirection ?? "asc";
+            sortFieldName = sortFieldName ?? "_id";
+            sortFieldName = char.ToUpper(sortFieldName[0]) + sortFieldName.Substring(1);
+            var shops = await _mongoDBService.GetFilteredDocumentsAsync(filter, skipCount, pageSize ?? 10, sortDirection);
+            response.TotalRecord = await _mongoDBService.GetTotalCountAsync(filter);
+            response.TotalPage = (int)Math.Ceiling((double)response.TotalRecord / (pageSize ?? 10));
+            response.Shops = _mapper.Map<List<Shop>>(shops);
             return response;
         }
         public async Task<ResponseBaseModel> ApproveShop(string shopId, ResponseBaseModel response)

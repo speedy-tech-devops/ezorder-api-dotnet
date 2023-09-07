@@ -3,6 +3,7 @@ using DataServices.Models;
 using DataServices.Repository;
 using EZOrderApi;
 using EZOrderApi.Class;
+using EZOrderApi.Services;
 using LineMessage.Middleware;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -12,7 +13,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("MongoDBSettings"));
+builder.Services.Configure<EmailSetting>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddSingleton<MongoDBServices>();
+builder.Services.AddSingleton<EmailService>();
 builder.Services.AddAutoMapper(typeof(MapperConfigs));
 builder.Services.AddControllers()
     .AddJsonOptions(

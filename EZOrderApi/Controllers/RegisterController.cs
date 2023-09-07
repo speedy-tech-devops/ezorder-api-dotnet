@@ -16,12 +16,14 @@ namespace EZOrderApi.Controllers
     {
         private readonly IMapper _mapper;
         private readonly MongoDBServices _mongoDBService;
+        private readonly EmailService _EmailService;
         private readonly IConfiguration _configuration;
-        public RegisterController(IMapper mapper, MongoDBServices mongoDBService, IConfiguration configuration)
+        public RegisterController(IMapper mapper, MongoDBServices mongoDBService, IConfiguration configuration, EmailService emailService)
         {
             _mapper = mapper;
             _mongoDBService = mongoDBService;
             _configuration = configuration;
+            _EmailService = emailService;
         }
         //[HttpGet("GetByName")]
         //public async Task<IEnumerable<ShopUsers>> GetByName(string name)
@@ -66,10 +68,18 @@ namespace EZOrderApi.Controllers
             }
             else
             {
-                await shopService.Register(request);
+                response = await shopService.Register(request, response);
+                if (response.Status == 200)
+                {
+                    await _EmailService.SendEmail(new SendEmail()
+                    {
+                        Body = _EmailService.RegisterTemplate(request.ShopName),
+                        Subject = "EZorder ยินดีต้อนรับ",
+                        SendTo = request.Email
+                    });
+                }
             }
             return await Task.FromResult(StatusCode(response.Status, response));
         }
-
     }
 }
