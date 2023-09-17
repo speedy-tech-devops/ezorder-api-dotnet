@@ -54,6 +54,9 @@ namespace DataServices.Models
         [BsonElement("referral_code_id")]
         [BsonRepresentation(BsonType.ObjectId)]
         public string? ReferralCodeId { get; set; }
+        [BsonElement("expird_at")]
+        [BsonSerializer(typeof(MongoSerializer))]
+        public DateTime ExpirdAt { get; set; }
     }
     public class ShopDescription
     {

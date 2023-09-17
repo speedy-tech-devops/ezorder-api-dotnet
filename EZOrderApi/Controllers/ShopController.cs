@@ -35,5 +35,13 @@ namespace EZOrderApi.Controllers
             response = await shopService.ApproveShop(id, response);
             return await Task.FromResult(StatusCode(response.Status, response));
         }
+        [HttpGet("GetShop")]
+        public async Task<IActionResult> GetShopUse(string searchText, int? pageSize, int? pageIndex, string orderBy, string sortBy)
+        {
+            ShopListResponse response = new ShopListResponse();
+            ShopService shopService = new ShopService(_mapper, _mongoDBService, _configuration);
+            response = await shopService.GetShop(response, searchText, pageIndex, pageSize, orderBy , sortBy);
+            return await Task.FromResult(StatusCode(response.Status, response));
+        }
     }
 }
