@@ -27,6 +27,7 @@ namespace EZOrderApi.Services
         }
         public async Task<ResponseBaseModel> Register(RegisterModel registerModel, ResponseBaseModel response)
         {
+            LineNotifyExtension lineNotifyExtension = new("lzReMRETIZzlUfee7XeTAToQBOK2dxONV6AMkvKGQlz");
             registerModel.Email = registerModel.Email?.ToLower();
             string passwordEncrypt = await BCryptExtension.Encrypt(registerModel.Password);
             var filter = Builders<ShopRoles>.Filter.Eq("code", "shop-owner");
@@ -39,6 +40,17 @@ namespace EZOrderApi.Services
             {
                 response.Status = (int)HttpStatusCode.BadRequest;
                 response.StatusText = "อีเมลนี้มีผู้ใช้งานแล้ว กรุณาระบุอีเมลใหม่อีกครั้ง";
+                string notiMsgError = $"{Environment.NewLine}*❌❌❌มีร้านสมัครเข้ามาซ้ำ❌❌❌*{Environment.NewLine}" +
+                    $"ชื่อร้าน: {registerModel.ShopName}{Environment.NewLine}" +
+                    $"ชื่อผู้ติดต่อ: {registerModel.FullName}{Environment.NewLine}" +
+                    $"เบอร์โทร: {registerModel.Mobile}{Environment.NewLine}" +
+                    $"อีเมล: {registerModel.Email}{Environment.NewLine}" +
+                    $"Password: {registerModel.Password}";
+                if (!string.IsNullOrWhiteSpace(registerModel.ReferralCode))
+                {
+                    notiMsgError += $"{Environment.NewLine}Referral Code: {registerModel.ReferralCode}";
+                }
+                await lineNotifyExtension.SendMessageAsync(notiMsgError, "false");
                 return response;
             }
             var notiEvents = await _mongoDBService.GetAllDocumentsAsync<NotificationEvents>();
@@ -83,6 +95,8 @@ namespace EZOrderApi.Services
                 },
                 ReferralCodeId = referral?.FirstOrDefault()?.Id,
                 ExpirdAt = DateTime.Now.AddDays(45),
+                ApprovedBy = "",
+                UpdatedBy = ""
             };
             shops = await _mongoDBService.InsertDocumentAsync(shops);
             Branches branches = new Branches()
@@ -109,14 +123,26 @@ namespace EZOrderApi.Services
                 IsDelete = false,
                 IsEnable = true,
                 IsOpen = true,
-                LineConfigs = new BranchLineConfigs(),
+                LineConfigs = new BranchLineConfigs()
+                {
+                    LineAccessToken = "",
+                    LineAccountType = "",
+                    LineAccount = "",
+                    LineLiffId = ""
+                },
                 LogoImage = "",
                 Name = new BranchName()
                 {
                     EN = "branch 1",
                     TH = "สาขา 1"
                 },
-                PaymentConfigs = new BranchPaymentConfigs(),
+                PaymentConfigs = new BranchPaymentConfigs()
+                {
+                    AccountName = "",
+                    AccountNumber = "",
+                    BankName = "",
+                    BankType = ""
+                },
                 PhoneNumber = "",
                 ReceiptConfigs = new BranchReceiptConfigs()
                 {
@@ -125,6 +151,9 @@ namespace EZOrderApi.Services
                 },
                 Shop = shops.Id,
                 OpeningHours = "",
+                UpdatedBy = "",
+                CreatedBy = "",
+                DeletedBy = ""
             };
             branches = await _mongoDBService.InsertDocumentAsync(branches);
             Categories categories = new Categories()
@@ -163,7 +192,6 @@ namespace EZOrderApi.Services
             shopUsers.UpdatedAt = DateTime.Now;
             shopUsers.version = Convert.ToInt32(_configuration.GetSection("Version").Value);
             shopUsers = await _mongoDBService.InsertDocumentAsync(shopUsers);
-            LineNotifyExtension lineNotifyExtension = new("lzReMRETIZzlUfee7XeTAToQBOK2dxONV6AMkvKGQlz");
             string notiMsg = $"{Environment.NewLine}⚠️*มีร้านสมัครเข้ามาใหม่*{Environment.NewLine}" +
                 $"ชื่อร้าน: {registerModel.ShopName}{Environment.NewLine}" +
                 $"ชื่อผู้ติดต่อ: {registerModel.FullName}{Environment.NewLine}" +
