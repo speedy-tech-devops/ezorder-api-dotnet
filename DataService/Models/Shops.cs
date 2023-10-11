@@ -31,6 +31,9 @@ namespace DataServices.Models
         public string? PackageType { get; set; }
         [BsonElement("shop_type")]
         public string? ShopType { get; set; }
+        [BsonElement("shop_categories")]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public List<string?> ShopCategories { get; set; } = new List<string>();
         [BsonElement("address")]
         public string? Address { get; set; }
         [BsonElement("phone_number")]

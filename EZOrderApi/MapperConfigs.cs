@@ -15,7 +15,8 @@ namespace EZOrderApi
                .ReverseMap();
             CreateMap<DataServices.Models.Shops, DTO.Shop>()
                .ReverseMap();
-            
+            CreateMap<DataServices.Models.ShopCategories, DTO.ShopCategoriesItemResponse>()
+               .ReverseMap();
         }
     }
 }

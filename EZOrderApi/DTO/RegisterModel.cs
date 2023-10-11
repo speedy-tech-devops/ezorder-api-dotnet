@@ -18,5 +18,6 @@ namespace EZOrderApi.DTO
         public required string Password { get; set; }
         public string ShopType { get; set; } = "RESTAURANT";
         public string? ReferralCode { get; set; }
+        public List<string> ShopCategories { get; set; } = new List<string>();
     }
 }

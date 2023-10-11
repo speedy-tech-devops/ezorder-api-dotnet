@@ -5,6 +5,8 @@ using DataServices;
 using DataServices.Models;
 using DataServices.Repository;
 using EZOrderApi.DTO;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.OpenApi.Writers;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Libmongocrypt;
@@ -33,7 +35,24 @@ namespace EZOrderApi.Services
             var filter = Builders<ShopRoles>.Filter.Eq("code", "shop-owner");
             var role = await _mongoDBService.GetFilteredDocumentsAsync(filter);
             var filterRef = Builders<ReferralCode>.Filter.Where(c => c.IsEnable == true && c.Code == registerModel.ReferralCode && c.IsDelete == false);
+            var filterCategory = Builders<ShopCategories>.Filter.Where(c => c.IsDelete == false && registerModel.ShopCategories.Contains(c.Id));
             var referral = await _mongoDBService.GetFilteredDocumentsAsync(filterRef);
+            try
+            {
+                var category = await _mongoDBService.GetFilteredDocumentsAsync(filterCategory);
+                if (!category.Any())
+                {
+                    response.Status = 400;
+                    response.StatusText = $"ShopCategories ไม่พบในระบบ";
+                    return response;
+                }
+            }
+            catch (Exception)
+            {
+                response.Status = 400;
+                response.StatusText = $"ShopCategories ไม่พบในระบบ";
+                return response;
+            }
             var filterShop = Builders<ShopUsers>.Filter.Where(c => c.Email == registerModel.Email);
             var shopUsersCheck = await _mongoDBService.GetFilteredDocumentsAsync(filterShop);
             if (shopUsersCheck.Any())
@@ -96,7 +115,8 @@ namespace EZOrderApi.Services
                 ReferralCodeId = referral?.FirstOrDefault()?.Id,
                 ExpirdAt = DateTime.Now.AddDays(45),
                 ApprovedBy = "",
-                UpdatedBy = ""
+                UpdatedBy = "",
+                ShopCategories = registerModel.ShopCategories
             };
             shops = await _mongoDBService.InsertDocumentAsync(shops);
             Branches branches = new Branches()
@@ -183,6 +203,8 @@ namespace EZOrderApi.Services
             shopUsers.FirstName = name[0];
             if (name.Count > 1)
                 shopUsers.LastName = name[1];
+            else
+                shopUsers.LastName = "";
             shopUsers.Password = passwordEncrypt;
             shopUsers.OwnerShop = shops.Id;
             shopUsers.IsDelete = false;
@@ -246,6 +268,61 @@ namespace EZOrderApi.Services
                 }
                 var update = Builders<Shops>.Update.Set(x => x.IsApproved, true)
                                                                      .Set(x => x.ApprovedAt, DateTime.Now);
+                await _mongoDBService.UpdateDocumentAsync(filter, update);
+                return response;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+        }
+
+        public async Task<ResponseBaseModel> CreateShopCategories(ShopCategoriesModel request, ResponseBaseModel response)
+        {
+            var filterRef = Builders<ShopCategories>.Filter.Where(c => c.IsDelete == true && c.Name.TH == request.NameTh && c.Name.EN == request.NameEn);
+            var filter = await _mongoDBService.GetFilteredDocumentsAsync(filterRef);
+            if (filter.Any())
+            {
+                response.Status = (int)HttpStatusCode.BadRequest;
+                response.StatusText = $"ชื่อประเภทมีซ้ำในระบบ";
+                return response;
+            }
+            ShopCategories shopCategories = new ShopCategories()
+            {
+                CreatedAt = DateTime.Now,
+                Name = new ShopCategoriesName()
+                {
+                    EN = request.NameEn,
+                    TH = request.NameTh,
+                },
+                IsDelete = false
+            };
+            shopCategories = await _mongoDBService.InsertDocumentAsync(shopCategories);
+            return response;
+        }
+        public async Task<ShopCategoriesResponse> GetShopCategories(ShopCategoriesResponse response)
+        {
+            var filterRef = Builders<ShopCategories>.Filter.Where(c => c.IsDelete == false);
+            var referral = await _mongoDBService.GetFilteredDocumentsAsync(filterRef);
+            response.Referral = _mapper.Map<List<ShopCategoriesItemResponse>>(referral);
+            return response;
+        }
+        public async Task<ResponseBaseModel> DeleteShopCategories(string id, ResponseBaseModel response)
+        {
+            try
+            {
+                var filter = Builders<ShopCategories>.Filter.Where(c => c.Id == id);
+                var shops = _mongoDBService.GetFilteredDocumentsAsync(filter).GetAwaiter().GetResult().FirstOrDefault();
+                if (shops == null)
+                {
+                    response.Status = (int)HttpStatusCode.BadRequest;
+                    response.StatusText = "ไม่พบข้อมูล";
+                    return response;
+                }
+                var update = Builders<ShopCategories>.Update.Set(x => x.IsDelete, true)
+                                                            .Set(x => x.UpdatedAt, DateTime.Now);
                 await _mongoDBService.UpdateDocumentAsync(filter, update);
                 return response;
             }
